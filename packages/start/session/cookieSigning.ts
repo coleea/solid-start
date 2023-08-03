@@ -31,7 +31,15 @@ export const unsign: InternalUnsignFunctionDoNotUseMe = async (signed, secret) =
 
   let key = await createKey(secret, ["verify"]);
   let data = encoder.encode(value);
-  let signature = byteStringToUint8Array(atob(hash));
+  let hashDecoded;
+
+  try {
+    hashDecoded =  atob(hash);
+  } catch (error) {
+    return false;
+  }
+
+  let signature = byteStringToUint8Array(hashDecoded);
   let valid = await crypto.subtle.verify("HMAC", key, signature, data);
 
   return valid ? value : false;
